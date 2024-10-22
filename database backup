@@ -1,0 +1,41 @@
+install mutt -y
+
+opensuse
+zypper install mutt -y
+
+centos
+yum install mutt -y
+
+STEP 1:
+mkdir /root/backup
+
+STEP 2: Edit the file below.
+nano /root/dbbackup.sh
+
+Paste the script below.
+
+#!/bin/bash
+echo "Starting to backup database"
+mysqldump --opt -uroot -ppassword asterisk > /var/backup/vicidial-db_`date '+%Y-%m-%d'`.sql
+echo "backup done..."
+echo "Please wait, Compressing backup file..."
+gzip /oor/backup/vicidial-db_`date '+%Y-%m-%d'`.sql
+echo "gzip done..."
+echo " -- sending mail"
+echo | mutt -s "Mysql Backup Done" emailaddress
+echo "DONE"
+
+save and exit
+
+
+chmod 755 /root/dbbackup.sh
+
+crontab -e
+#backupdatabase every 2am
+0 2 * * * /root/dbbackup.sh
+
+save and exit
+reboot
+
+
+
